@@ -4,3 +4,10 @@ export class AuthError extends Error {
     this.name = "AuthError";
   }
 }
+
+export class ResourceNotFoundError extends Error {
+  constructor() {
+    super();
+    this.name = "ResourceNotFoundError";
+  }
+}
