@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { getUserProfile, User } from "../../api-requests/requests";
-import { AuthError } from "../../api-requests/request-errors/errors";
+import {
+  AuthError,
+  ResourceNotFoundError,
+} from "../../api-requests/request-errors/errors";
 
 type ProfileState = User & {
   isLoading: boolean;
@@ -13,7 +16,8 @@ type ProfileState = User & {
  */
 type FetchUserProfilePayload = {
   userName: string;
-  navigate: Function;
+  navigateToAuth: Function;
+  navigateToResourceNotFoundError: Function;
 };
 
 export const fetchUserProfile = createAsyncThunk(
@@ -24,7 +28,9 @@ export const fetchUserProfile = createAsyncThunk(
       return profile;
     } catch (error) {
       if (error instanceof AuthError) {
-        payload.navigate();
+        payload.navigateToAuth();
+      } else if (error instanceof ResourceNotFoundError) {
+        payload.navigateToResourceNotFoundError();
       } else if (error instanceof Error) {
         return rejectWithValue(error.message);
       }

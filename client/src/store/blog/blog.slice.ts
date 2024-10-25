@@ -8,6 +8,7 @@ import {
   BlogReactionResponse,
   submitBlogReaction,
 } from "../../api-requests/requests";
+import { ResourceNotFoundError } from "../../api-requests/request-errors/errors";
 
 type BlogState = {
   notification: string | null;
@@ -40,6 +41,16 @@ type Blog = {
   blogContent: string;
 };
 
+type GetBlogPayload = {
+  blogId: string;
+  navigateToResourceNotFoundPage: Function;
+};
+
+type DeleteBlogPayload = {
+  title: string;
+  navigateToResourceNotFoundPage: Function;
+};
+
 export const postBlog = createAsyncThunk(
   "blog/postBlog",
   async (doc: Blog, { rejectWithValue }) => {
@@ -59,11 +70,14 @@ export const postBlog = createAsyncThunk(
 
 export const deleteBlogByTitle = createAsyncThunk(
   "blog/deleteBlogByTitle",
-  async (title: string, { rejectWithValue }) => {
+  async (payload: DeleteBlogPayload, { rejectWithValue }) => {
     try {
-      const result = await deleteBlogRequest(title);
+      const result = await deleteBlogRequest(payload.title);
       return result;
     } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        payload.navigateToResourceNotFoundPage();
+      }
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
@@ -74,11 +88,14 @@ export const deleteBlogByTitle = createAsyncThunk(
 
 export const getBlog = createAsyncThunk(
   "blog/getBlog",
-  async (blogId: string, { rejectWithValue }) => {
+  async (payload: GetBlogPayload, { rejectWithValue }) => {
     try {
-      const blog = await fetchBlogContent(blogId);
+      const blog = await fetchBlogContent(payload.blogId);
       return blog;
     } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        payload.navigateToResourceNotFoundPage();
+      }
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
