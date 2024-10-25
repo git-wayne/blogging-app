@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   deleteBlogByTitle,
   setBlogNotificationMessage,
@@ -15,6 +16,8 @@ import {
   DeleteBlogButton,
 } from "./blog-preview.styles";
 
+import { ResourceNotFoundError } from "../../api-requests/request-errors/errors";
+
 const BlogPreview = () => {
   const [blogTitles, setBlogTitles] = useState([]);
   const dispatch = useDispatch();
@@ -24,6 +27,7 @@ const BlogPreview = () => {
   const [isOwnProfile, setIsOwnProfile] = useState(
     currentUser.userName === profile.userName
   );
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getTitles = async () => {
@@ -32,15 +36,24 @@ const BlogPreview = () => {
         setBlogTitles(titles);
         setIsOwnProfile(currentUser.userName === profile.userName);
       } catch (error) {
+        if (error instanceof ResourceNotFoundError) {
+          navigate("../../404", { replace: true });
+        }
+
         dispatch(setBlogNotificationMessage(error.message));
       }
     };
     getTitles();
-  }, [dispatch, profile.userName, currentUser.userName]);
+  }, [dispatch, profile.userName, currentUser.userName, navigate]);
 
   const handleDelete = (e) => {
     const title = e.target.dataset.title;
-    dispatch(deleteBlogByTitle(title))
+
+    const payload = {
+      title,
+      navigateToResourceNotFoundPage: () => navigate("../../404"),
+    };
+    dispatch(deleteBlogByTitle(payload))
       .unwrap()
       .then((successMessage) => {
         const updatedBlogTitles = blogTitles.filter(
