@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AxiosError } from "axios";
-import { AuthError } from "./request-errors/errors";
+import { AuthError, ResourceNotFoundError } from "./request-errors/errors";
 import { AuthCredentials } from "../store/user/user.slice";
 import {
   debouncedGetUserSuggestions,
@@ -113,6 +113,11 @@ export const getUserProfile = async (userName?: string) => {
       if (statusCode === 401 || statusCode === 403) {
         throw new AuthError();
       }
+
+      if (statusCode === 404) {
+        throw new ResourceNotFoundError();
+      }
+
       throw new Error(errorMessage);
     } else {
       throw new Error("An unknow error occurred");
@@ -192,6 +197,18 @@ export const fetchTitles = async (userName: string) => {
     });
     return res.data.titles;
   } catch (error) {
+    if (error instanceof AxiosError) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      const errorMessage =
+        axiosError.response?.data.error || "Unknown error occurred";
+      const statusCode = error.response?.status;
+
+      if (statusCode === 404) {
+        throw new ResourceNotFoundError();
+      }
+
+      throw new Error(errorMessage);
+    }
     throw new Error("An error occured when getting titles");
   }
 };
@@ -208,6 +225,12 @@ export const fetchBlogContent = async (blogId: string) => {
       const axiosError = error as AxiosError<ErrorResponse>;
       const errorMessage =
         axiosError.response?.data.error || "Unknown error occurred";
+      const statusCode = error.response?.status;
+
+      if (statusCode === 404) {
+        throw new ResourceNotFoundError();
+      }
+
       throw new Error(errorMessage);
     }
     throw new Error("An unkown error occured");
@@ -226,6 +249,12 @@ export const deleteBlogRequest = async (title: string) => {
       const axiosError = error as AxiosError<ErrorResponse>;
       const errorMessage =
         axiosError.response?.data.error || "An unknown error occured";
+      const statusCode = error.response?.status;
+
+      if (statusCode === 404) {
+        throw new ResourceNotFoundError();
+      }
+
       throw new Error(errorMessage);
     }
     throw new Error("An unknown error occurred");
