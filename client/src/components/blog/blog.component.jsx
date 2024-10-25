@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useEditor, EditorContent } from "@tiptap/react";
@@ -40,6 +40,7 @@ const Blog = () => {
   const [likeCount, setLikeCount] = useState(0);
   const [userHasLikedBlog, setUserHasLikedBlog] = useState(false);
   const [userHasDislikedBlog, setUserHasDislikedBlog] = useState(false);
+  const navigate = useNavigate();
 
   const editor = useEditor({
     extensions: [
@@ -55,7 +56,12 @@ const Blog = () => {
   });
 
   useEffect(() => {
-    dispatch(getBlog(blogId))
+    const payload = {
+      blogId,
+      navigateToResourceNotFoundPage: () =>
+        navigate("../../404", { replace: true }),
+    };
+    dispatch(getBlog(payload))
       .unwrap()
       .then((blog) => {
         const datePosted = new Date(blog.datePosted);
@@ -71,7 +77,7 @@ const Blog = () => {
       .catch((errorMessage) => {
         setBlogNotificationMessage(errorMessage);
       });
-  }, [blogId, dispatch]);
+  }, [blogId, dispatch, navigate]);
 
   useEffect(() => {
     if (editor && blog.content) {
