@@ -40,14 +40,12 @@ const ProfilePage = () => {
   useEffect(() => {
     const getProfile = async (userName) => {
       try {
-        /**
-         * Pass the navigate function to fetchUserProfile so that if the user is not authenticated
-         * it can call .navigate() to navigate them to authenticate themselves.
-         */
         const fetchUserProfilePayload = {
           userName,
-          navigate: () =>
+          navigateToAuth: () =>
             navigate("../../authentication/sign-in", { replace: true }),
+          navigateToNotFoundPage: () =>
+            navigate("../../404", { replace: true }),
         };
 
         const profileData = await dispatch(
