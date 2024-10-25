@@ -90,11 +90,13 @@ describe("test blog controller", () => {
       expect(datePosted.toISOString()).toBe(response.body.blog.datePosted);
     });
 
-    it("should return 500 if an error occurs", async () => {
+    it("should return 400 if request is sent with missing fields", async () => {
       const response = await request(app).post("/posts/content").send({});
 
-      expect(response.status).toBe(500);
-      expect(response.body.error).toBe("A server errror occured");
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe(
+        "Missing required fields: blogId or userId."
+      );
     });
   });
 
