@@ -44,7 +44,7 @@ const ProfilePage = () => {
           userName,
           navigateToAuth: () =>
             navigate("../../authentication/sign-in", { replace: true }),
-          navigateToNotFoundPage: () =>
+          navigateToResourceNotFoundPage: () =>
             navigate("../../404", { replace: true }),
         };
 
