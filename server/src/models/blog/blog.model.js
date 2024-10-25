@@ -5,6 +5,8 @@ import {
   updateUsersDislikedBlogs,
 } from "../user/user.model.js";
 
+import { ResourceNotFoundError } from "../../utils/errors.js";
+
 export const checkExistingTitle = async (authorId, title) => {
   return blogs.findOne({ authorId, title });
 };
@@ -75,7 +77,7 @@ export const fetchBlogContent = async (blogId) => {
     .populate("authorId", "userName");
 
   if (!blog) {
-    throw new Error("Blog not found");
+    throw new ResourceNotFoundError();
   }
 
   const blogObject = blog.toObject();
