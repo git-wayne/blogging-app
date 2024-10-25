@@ -10,6 +10,7 @@ import SettingsForm from "./components/settings-form/settings-form.component";
 import ProfilePage from "./components/profile/profile.component";
 import BlogPreview from "./components/blog-preview/blog-preview.component";
 import LikesPreview from "./components/likes/likes-preview.component";
+import ResourceNotFoundPage from "./components/404-page/404";
 import Home from "./routes/home/home";
 
 export const router = createBrowserRouter([
@@ -17,6 +18,10 @@ export const router = createBrowserRouter([
     path: "/",
     element: <NavBar />,
     children: [{ index: true, element: <Home /> }],
+  },
+  {
+    path: "/404",
+    element: <ResourceNotFoundPage />,
   },
   {
     path: "authentication/sign-in",
