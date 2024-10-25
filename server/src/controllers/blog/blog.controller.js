@@ -10,6 +10,8 @@ import {
   disLikeBlog,
 } from "../../models/blog/blog.model.js";
 
+import { ResourceNotFoundError } from "../../utils/errors.js";
+
 /**
  * Handles requests to post a blog to the database.
  *
@@ -130,6 +132,11 @@ export const getBlogContent = async (req, res) => {
 
     return res.status(200).json({ blog: responseBlog });
   } catch (error) {
+    if (error instanceof ResourceNotFoundError) {
+      return res
+        .status(404)
+        .json({ error: "Could not find the requested blog" });
+    }
     return res.status(500).json({ error: "A server errror occured" });
   }
 };
