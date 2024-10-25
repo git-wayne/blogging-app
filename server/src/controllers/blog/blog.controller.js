@@ -104,6 +104,13 @@ export const getBlogContent = async (req, res) => {
   try {
     const blogId = req.body.blogId;
     let userId = req.user.id;
+
+    if (!blogId || !userId) {
+      return res
+        .status(400)
+        .json({ error: "Missing required fields: blogId or userId." });
+    }
+
     const blog = await fetchBlogContent(blogId);
 
     userId = new mongoose.Types.ObjectId(userId);
