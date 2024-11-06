@@ -65,8 +65,8 @@ export const authenticateGoogleUser = (action: AuthAction) => {
 };
 
 /**
- * Used for local auth. Local meaning its using a username or emai and not using
- * an oauth provider
+ * Used for local auth. Local meaning its using a username or email and not using
+ * an oauth service
  */
 export const sendLocalAuthRequest = async (user: AuthCredentials) => {
   const { action, ...userWithoutAction } = user;
@@ -89,10 +89,12 @@ export const sendLocalAuthRequest = async (user: AuthCredentials) => {
 };
 
 /**
- * After successful authentication, a thunk is dispatched that calls this function
- * to retrieve the user profile. Immediately after authentication,
- * the client does not have a username available for POST requests. Instead, the
- * username is derived from a cookie issued during authentication
+ * After successful with authentication with Google, a thunk is dispatched that calls this function
+ * to retrieve the user profile. Immediately after successful authentication with Google, the user's
+ * profile is not returned by the server as a link was clicked for authentication. Therefore the client does
+ * not have a username available for POST requests. A GET request is made and the username will be retreived
+ * from a cookie issued during authentication. This is the one and only time where this will happen and all
+ * other requests POST a username.
  */
 export const getUserProfile = async (userName?: string) => {
   try {
